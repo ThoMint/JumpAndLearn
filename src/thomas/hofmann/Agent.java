@@ -3,131 +3,53 @@ package thomas.hofmann;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
-public class Agent
-{
-	private ArrayList<Double> nnInput;
-	private ArrayList<Double> nnOutput;
+public class Agent {
+	public NeuralNetwork brain;
+	public Double fitness;
+	public Rectangle hitbox;
+	public Double verticalVel;
+	public Double verticalPos;
+	public Double horizontalPos;
+	public Double time;
+	public Boolean enabled;
+	public Boolean jumping;
+	public Double traveled;
 
-	private NeuralNetwork brain;
-	private Double fitness;
-	
-	private Rectangle hitbox;
-	private Double verticalVel;
-	private Double verticalPos;
-	private Double horizontalPos;
-	private Double time;
-	private Double gravity;
-	
-	private Boolean enabled;
-	private Boolean jumping;
+	public Agent() {
+		brain = new NeuralNetwork();
+		hitbox = new Rectangle();
+		verticalVel = new Double(0.0);
+		verticalPos = new Double(0.0);
+		horizontalPos = Math.random() * 20;
+		time = new Double(1.0);
+		enabled = new Boolean(true);
+		jumping = new Boolean(true);
+		fitness = new Double(0.0);
+		traveled = new Double(0.0);
+	}
 
-	public Agent(double gravity)
-	{
-		this.nnInput = new ArrayList<>();
-		this.nnOutput = new ArrayList<>();
-		
-		this.brain = new NeuralNetwork();
-		
-		this.hitbox = new Rectangle();
-		this.verticalVel = new Double(0.0);
-		this.verticalPos = new Double(0.0);
-		this.horizontalPos = Math.random()*20;
-		this.time = new Double(1.0);
-		this.gravity = gravity;
-		
-		this.enabled = new Boolean(true);
-		this.jumping = new Boolean(true);
+	public void createBrainStructure(int inputNodes, int hiddenNodes, int outputNodes) {
+		brain.addInputLayer(inputNodes, ActFunctions.TANH);
+		brain.addHiddenLayer(hiddenNodes, ActFunctions.SIGMOID);
+		brain.addOutputLayer(outputNodes, ActFunctions.RELU);
+		brain.randomizeWeights(-0.5, 0.5);
+		brain.mutateBias(0.5);
 	}
-	
-	public void createBrainStructure(int inputNodes, int hiddenNodes, int outputNodes)
-	{
-		this.brain.addInputLayer(inputNodes, ActFunctions.TANH);
-		this.brain.addHiddenLayer(hiddenNodes, ActFunctions.SIGMOID);
-		this.brain.addOutputLayer(outputNodes, ActFunctions.RELU);
-		
-		this.brain.randomizeWeights(-0.5, 0.5);
-		this.brain.mutateBias(0.5);
+
+	public void mutate(double mutationRate) {
+		brain.mutateWeights(mutationRate);
+		brain.mutateBias(mutationRate);
 	}
-	
-	public void mutate(double mutationRate)
-	{
-		this.brain.mutateWeights(mutationRate);
-		this.brain.mutateBias(mutationRate);
-	}
-	
-	public ArrayList<Double> process(ArrayList<Double> input)
-	{
+
+	public ArrayList<Double> process(ArrayList<Double> input) {
 		return brain.compute(input);
 	}
-	
-	public void updateHitbox()
-	{
-		this.hitbox.setFrame(horizontalPos, this.verticalPos, 75, 75);
+
+	public void updateHitbox() {
+		hitbox.setFrame(horizontalPos, verticalPos, 75, 75);
 	}
 
-	public Double getVerticalVel()
-	{
-		return verticalVel;
-	}
-
-	public void setVerticalVel(Double verticalVel)
-	{
-		this.verticalVel = verticalVel;
-	}
-
-	public Double getGravity() {
-		return gravity;
-	}
-
-	public void setGravity(Double gravity) {
-		this.gravity = gravity;
-	}
-
-	public Boolean getJumping() {
-		return jumping;
-	}
-
-	public void setJumping(Boolean jumping) {
-		this.jumping = jumping;
-	}
-
-	public Double getVerticalPos()
-	{
-		return verticalPos;
-	}
-
-	public void setVerticalPos(Double verticalPos)
-	{
-		this.verticalPos = verticalPos;
-	}
-
-	public Double getTime()
-	{
-		return time;
-	}
-
-	public void setTime(Double time)
-	{
-		this.time = time;
-	}
-	
-	public Rectangle getHitbox()
-	{
-		return hitbox;
-	}
-
-	public void setHitbox(Rectangle hitbox)
-	{
-		this.hitbox = hitbox;
-	}
-	
-	public Boolean isEnabled()
-	{
-		return enabled;
-	}
-
-	public void setEnabled(Boolean enabled)
-	{
-		this.enabled = enabled;
+	public void calculateFitness() {
+		fitness=traveled;
 	}
 }
